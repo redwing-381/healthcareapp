@@ -25,14 +25,29 @@ export default function MentalHealthPage() {
     handleSubmit()
   }
 
-  const handleSubmit = () => {
-    setIsAnalyzing(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsAnalyzing(false)
-      setShowResults(true)
-    }, 3000)
+const handleSubmit = async () => {
+  setIsAnalyzing(true)
+
+  const blob = new Blob([inputText], { type: "text/plain" })
+  const formData = new FormData()
+  formData.append("file", blob, "feeling.txt")
+
+  try {
+    const res = await fetch("http://127.0.0.1:5000/upload", {
+      method: "POST",
+      body: formData
+    })
+    const data = await res.json()
+
+    console.log("✅ IPFS CID:", data.cid)
+    setIsAnalyzing(false)
+    setShowResults(true)
+  } catch (err) {
+    console.error("❌ Upload failed:", err)
+    setIsAnalyzing(false)
   }
+}
+
 
   const handleReset = () => {
     setShowResults(false)
